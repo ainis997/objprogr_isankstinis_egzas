@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <algorithm> // remove_if ir t.t.
 #include <unordered_map>
 #include <iomanip>
 #include <exception>
@@ -13,6 +14,35 @@ class Tekstas
 
 public:
     Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
+
+    std::string isvalyt_zodi(std::string zodis)
+    {
+        zodis.erase(std::remove_if(zodis.begin(), zodis.end(), [](unsigned char c)
+                                   { return std::ispunct(c) && c != '-'; }), // '-' netrinam, nes plg. Tumas-Vaižgantas, Lavoriškių-Nemenčinės
+                    zodis.end());
+
+        // likusių, utf-8 skyrybos ženklų valymas
+        const std::string zenklai[] = {"„", "“", "–", "”", "…"};
+        for (const std::string &zenklas : zenklai)
+        {
+            size_t poz = zodis.find(zenklas);
+            if (poz != std::string::npos) // jeigu rasta
+            {
+                zodis.erase(poz, zenklas.length());
+            }
+        }
+
+        return zodis;
+    }
+
+    bool ar_url(std::string s)
+    {
+        if (s.substr(0, 7) == "http://" || s.substr(0, 8) == "https://")
+        {
+            return true;
+        }
+        // ...
+    }
 
     void suskaityt_zodziai()
     {
@@ -30,7 +60,8 @@ public:
             std::string zodis;
             while (sr >> zodis)
             {
-                zodziai[zodis]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                std::string tvarkytas_zodis = isvalyt_zodi(zodis);
+                zodziai[tvarkytas_zodis]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
             }
             ++eil_num;
         }
