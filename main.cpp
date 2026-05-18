@@ -4,8 +4,25 @@
 #include <string>
 #include <algorithm> // remove_if ir t.t.
 #include <unordered_map>
+#include <unordered_set>
 #include <iomanip>
 #include <exception>
+
+class Domenu_priesagos
+{
+public:
+    const std::string domenu_priesagu_failo_pav = "domenu_priesagos.txt";
+    std::unordered_set<std::string> domenu_priesagos;
+    Domenu_priesagos()
+    {
+        std::ifstream domenu_priesagu_failas(domenu_priesagu_failo_pav);
+        std::string eil;
+        while (std::getline(domenu_priesagu_failas, eil))
+        {
+            domenu_priesagos.insert(eil);
+        }
+    }
+};
 
 class Tekstas
 {
@@ -35,13 +52,27 @@ public:
         return zodis;
     }
 
-    bool ar_url(std::string s)
+    friend bool ar_url(std::string s)
     {
         if (s.substr(0, 7) == "http://" || s.substr(0, 8) == "https://")
         {
             return true;
         }
-        // ...
+        Domenu_priesagos d;
+        if (d.domenu_priesagos.empty())
+        {
+            throw std::runtime_error("Nerastos URL domenų priesagos.");
+        }
+        for (const auto &priesaga : d.domenu_priesagos)
+        {
+            std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c)
+                           { return std::toupper(c); });
+            if (s.find("." + priesaga) != std::string::npos)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     void suskaityt_zodziai()
@@ -60,8 +91,15 @@ public:
             std::string zodis;
             while (sr >> zodis)
             {
-                std::string tvarkytas_zodis = isvalyt_zodi(zodis);
-                zodziai[tvarkytas_zodis]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                if (!ar_url(zodis))
+                {
+                    std::string tvarkytas_zodis = isvalyt_zodi(zodis);
+                    zodziai[tvarkytas_zodis]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                }
+                else
+                {
+                    zodziai[zodis]++;
+                }
             }
             ++eil_num;
         }
