@@ -11,10 +11,22 @@
 
 #include "zodzio_funkcijos.h"
 
+// class Zodis
+// {
+//     std::string zodis;
+//     unsigned int pasikartojimai;
+//     std::unordered_set<unsigned int> atveju_eilutes;
+
+// public:
+//     Zodis(std::string zodis) : zodis(zodis), pasikartojimai(1) {}
+//     // metuods, kad pakelt pasėkartuojėmus
+
+// };
+
 class Tekstas
 {
     std::string ivesties_failo_pav;
-    std::unordered_map<std::string, unsigned int> zodziai;
+    std::unordered_map<std::string, Zodzio_duomenys> zodziai; // map, ne set, nes seto elementus redaguot nepatogu
 
 public:
     Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
@@ -52,7 +64,17 @@ public:
                     std::string zodis2;
                     while (ss >> zodis2) // atsikratom sukurtų tarpų (jeigu jų buvo; jeigu ne, nieks nepakis)
                     {
-                        zodziai[zodis2]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                        ///////////////////////////////////////////
+                        if (zodziai.contains(zodis2))
+                        {
+                            zodziai[zodis2].pasikartojimai++;
+                            zodziai[zodis2].atveju_eilutes.insert(eil_num);
+                        }
+                        else
+                        {
+                            Zodzio_duomenys zd;
+                            zodziai.insert({zodis2, zd});
+                        }
                     }
                 }
                 else
@@ -62,7 +84,18 @@ public:
                     {
                         zodis = zodis.substr(1);
                     }
-                    zodziai[zodis]++;
+
+                    ////////////////////////////////
+                    if (zodziai.contains(zodis))
+                    {
+                        zodziai[zodis].pasikartojimai++;
+                        zodziai[zodis].atveju_eilutes.insert(eil_num);
+                    }
+                    else
+                    {
+                        Zodzio_duomenys zd;
+                        zodziai.insert({zodis, zd});
+                    }
                 }
             }
             ++eil_num;
@@ -75,7 +108,7 @@ public:
         std::ofstream isvesties_failas(isvesties_failo_pav);
         for (const auto &pora : zodziai)
         {
-            if (pora.second > 1)
+            if (pora.second.pasikartojimai > 1)
                 isvesties_failas << std::format("{:<30}{:<10}\n", pora.first, pora.second); // < — kairėn; 30/10 — setw
             // isvesties_failas << std::left << std::setw(30) << pora.first << std::left << std::setw(10) << pora.second << '\n';
         }

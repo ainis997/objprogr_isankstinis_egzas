@@ -6,6 +6,14 @@
 #include <unordered_set>
 #include <fstream>
 
+class Zodzio_duomenys
+{
+public:
+    unsigned int pasikartojimai;
+    std::unordered_set<unsigned int> atveju_eilutes;
+    Zodzio_duomenys() : pasikartojimai(1) {}
+};
+
 class Domenu_priesagos
 {
 public:
