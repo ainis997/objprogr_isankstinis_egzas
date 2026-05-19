@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <iomanip>
 #include <exception>
+#include <format>
 
 class Domenu_priesagos
 {
@@ -44,7 +45,7 @@ public:
             }
         }
 
-        const std::string zenklai[] = {"„", "“", "–", "”", "…"};
+        const std::string zenklai[] = {"„", "“", "–", "−", "—", "”", "“", "…"};
         for (const std::string &zenklas : zenklai)
         {
             size_t pos = zodis.find(zenklas);
@@ -89,7 +90,11 @@ public:
                        { return std::toupper(c); });
         for (const auto &priesaga : d.domenu_priesagos)
         {
-            if (s.ends_with("." + priesaga) || s.ends_with("." + priesaga + "/"))
+            if (s.ends_with("." + priesaga))
+            {
+                return true;
+            }
+            if (s.find("." + priesaga + "/") != std::string::npos) // ne tik ends_with .xxx/, nes pvz. prusaspira.org/wirdeins
             {
                 return true;
             }
@@ -123,16 +128,6 @@ public:
                     zodis = zodis.substr(1);
                 }
 
-                // // vikipedijos [...] išnašų tvarkymas (NEPILNAI DAR)
-                // if (zodis.ends_with(']'))
-                // {
-                //     auto pos = zodis.find('[');
-                //     if (pos != std::string::npos)
-                //     {
-                //         zodis = zodis.substr(0, pos + 1); // zodis = zodis nuo pirmos raidės iki [ neįskaitant
-                //     }
-                // }
-
                 if (!ar_url(zodis))
                 {
                     std::string zodis_be_skyrybos = pakeist_skyryba_tarpais(zodis);
@@ -145,6 +140,11 @@ public:
                 }
                 else
                 {
+                    // jeigu url prasideda skyrybos ženklu, pašalinam jį (neturėtų gi)
+                    if (std::ispunct(static_cast<unsigned char>(zodis.at(0))))
+                    {
+                        zodis = zodis.substr(1);
+                    }
                     zodziai[zodis]++;
                 }
             }
@@ -158,7 +158,8 @@ public:
         std::ofstream isvesties_failas(isvesties_failo_pav);
         for (const auto &pora : zodziai)
         {
-            isvesties_failas << std::left << std::setw(30) << pora.first << std::left << std::setw(10) << pora.second << '\n';
+            isvesties_failas << std::format("{:<30}{:<10}\n", pora.first, pora.second); // < — kairėn; 30/10 — setw
+            // isvesties_failas << std::left << std::setw(30) << pora.first << std::left << std::setw(10) << pora.second << '\n';
         }
         isvesties_failas.close();
     }
