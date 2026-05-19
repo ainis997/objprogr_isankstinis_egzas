@@ -158,7 +158,8 @@ public:
         std::ofstream isvesties_failas(isvesties_failo_pav);
         for (const auto &pora : zodziai)
         {
-            isvesties_failas << std::format("{:<30}{:<10}\n", pora.first, pora.second); // < — kairėn; 30/10 — setw
+            if (pora.second > 1)
+                isvesties_failas << std::format("{:<30}{:<10}\n", pora.first, pora.second); // < — kairėn; 30/10 — setw
             // isvesties_failas << std::left << std::setw(30) << pora.first << std::left << std::setw(10) << pora.second << '\n';
         }
         isvesties_failas.close();
