@@ -24,6 +24,8 @@ public:
     }
 };
 
+bool ar_url(std::string s); // be šito, klasės metodai nefiksuoja friendinės ar_url funkcijos
+
 class Tekstas
 {
     std::string ivesties_failo_pav;
@@ -63,11 +65,12 @@ public:
         {
             throw std::runtime_error("Nerastos URL domenų priesagos.");
         }
+
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c)
+                       { return std::toupper(c); });
         for (const auto &priesaga : d.domenu_priesagos)
         {
-            std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c)
-                           { return std::toupper(c); });
-            if (s.find("." + priesaga) != std::string::npos)
+            if (s.ends_with("." + priesaga) || s.ends_with("." + priesaga + "/"))
             {
                 return true;
             }
@@ -91,6 +94,26 @@ public:
             std::string zodis;
             while (sr >> zodis)
             {
+                // minimalūs pataisymai (pvz. gale tašką išimt), kad netrukdytų atpažint url'ų
+                if (std::ispunct(zodis.at(zodis.length() - 1)))
+                {
+                    zodis = zodis.substr(0, zodis.length() - 1);
+                }
+                else if (std::ispunct(zodis.at(0))) // maz kas
+                {
+                    zodis = zodis.substr(1);
+                }
+
+                // vikipedijos [...] išnašų tvarkymas (NEPILNAI DAR)
+                if (zodis.ends_with(']'))
+                {
+                    auto pos = zodis.find('[');
+                    if (pos != std::string::npos)
+                    {
+                        zodis = zodis.substr(0, pos + 1); // zodis = zodis nuo pirmos raidės iki [ neįskaitant
+                    }
+                }
+
                 if (!ar_url(zodis))
                 {
                     std::string tvarkytas_zodis = isvalyt_zodi(zodis);
