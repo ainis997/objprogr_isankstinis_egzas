@@ -34,22 +34,41 @@ class Tekstas
 public:
     Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
 
-    std::string isvalyt_zodi(std::string zodis)
+    std::string pakeist_skyryba_tarpais(std::string zodis)
     {
-        zodis.erase(std::remove_if(zodis.begin(), zodis.end(), [](unsigned char c)
-                                   { return std::ispunct(c) && c != '-'; }), // '-' netrinam, nes plg. Tumas-Vaižgantas, Lavoriškių-Nemenčinės
-                    zodis.end());
+        for (char &c : zodis)
+        {
+            if (std::ispunct(static_cast<unsigned char>(c))) // įskaitant '-', pvz. Tumas-Vaižgantas — tai gi du žodžiai
+            {
+                c = ' ';
+            }
+        }
 
-        // likusių, utf-8 skyrybos ženklų valymas
         const std::string zenklai[] = {"„", "“", "–", "”", "…"};
         for (const std::string &zenklas : zenklai)
         {
-            size_t poz = zodis.find(zenklas);
-            if (poz != std::string::npos) // jeigu rasta
+            size_t pos = zodis.find(zenklas);
+            while (pos != std::string::npos)
             {
-                zodis.erase(poz, zenklas.length());
+                zodis.replace(pos, zenklas.length(), zenklas.length(), ' ');
+                pos = zodis.find(zenklas, pos + zenklas.length());
             }
         }
+
+        // zodis.erase(std::remove_if(zodis.begin(), zodis.end(), [](unsigned char c)
+        //                            { return std::ispunct(c) && c != '-'; }), // '-' netrinam, nes plg. Tumas-Vaižgantas, Lavoriškių-Nemenčinės
+        //             zodis.end());
+
+        // // likusių, utf-8 skyrybos ženklų valymas
+        // const std::string zenklai[] = {"„", "“", "–", "”", "…"};
+        // for (const std::string &zenklas : zenklai)
+        // {
+        //     size_t poz = zodis.find(zenklas);
+        //     if (poz != std::string::npos) // jeigu rasta
+        //     {
+        //         zodis.erase(poz, zenklas.length());
+        //     }
+        // }
 
         return zodis;
     }
@@ -104,20 +123,25 @@ public:
                     zodis = zodis.substr(1);
                 }
 
-                // vikipedijos [...] išnašų tvarkymas (NEPILNAI DAR)
-                if (zodis.ends_with(']'))
-                {
-                    auto pos = zodis.find('[');
-                    if (pos != std::string::npos)
-                    {
-                        zodis = zodis.substr(0, pos + 1); // zodis = zodis nuo pirmos raidės iki [ neįskaitant
-                    }
-                }
+                // // vikipedijos [...] išnašų tvarkymas (NEPILNAI DAR)
+                // if (zodis.ends_with(']'))
+                // {
+                //     auto pos = zodis.find('[');
+                //     if (pos != std::string::npos)
+                //     {
+                //         zodis = zodis.substr(0, pos + 1); // zodis = zodis nuo pirmos raidės iki [ neįskaitant
+                //     }
+                // }
 
                 if (!ar_url(zodis))
                 {
-                    std::string tvarkytas_zodis = isvalyt_zodi(zodis);
-                    zodziai[tvarkytas_zodis]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                    std::string zodis_be_skyrybos = pakeist_skyryba_tarpais(zodis);
+                    std::istringstream ss(zodis_be_skyrybos);
+                    std::string zodis2;
+                    while (ss >> zodis2) // atsikratom sukurtų tarpų (jeigu jų buvo; jeigu ne, nieks nepakis)
+                    {
+                        zodziai[zodis2]++; // jei žodžio nėra, bus pridėtas naujas raktas su default int verte 0, ir po ++ jis taps 1; jei žodis yra, tsg bus ++'intas dab skaitiklis
+                    }
                 }
                 else
                 {
