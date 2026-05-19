@@ -9,23 +9,7 @@
 #include <exception>
 #include <format>
 
-class Domenu_priesagos
-{
-public:
-    const std::string domenu_priesagu_failo_pav = "domenu_priesagos.txt";
-    std::unordered_set<std::string> domenu_priesagos;
-    Domenu_priesagos()
-    {
-        std::ifstream domenu_priesagu_failas(domenu_priesagu_failo_pav);
-        std::string eil;
-        while (std::getline(domenu_priesagu_failas, eil))
-        {
-            domenu_priesagos.insert(eil);
-        }
-    }
-};
-
-bool ar_url(std::string s); // be šito, klasės metodai nefiksuoja friendinės ar_url funkcijos
+#include "zodzio_funkcijos.h"
 
 class Tekstas
 {
@@ -34,73 +18,6 @@ class Tekstas
 
 public:
     Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
-
-    std::string pakeist_skyryba_tarpais(std::string zodis)
-    {
-        for (char &c : zodis)
-        {
-            if (std::ispunct(static_cast<unsigned char>(c))) // įskaitant '-', pvz. Tumas-Vaižgantas — tai gi du žodžiai
-            {
-                c = ' ';
-            }
-        }
-
-        const std::string zenklai[] = {"„", "“", "–", "−", "—", "”", "“", "…"};
-        for (const std::string &zenklas : zenklai)
-        {
-            size_t pos = zodis.find(zenklas);
-            while (pos != std::string::npos)
-            {
-                zodis.replace(pos, zenklas.length(), zenklas.length(), ' ');
-                pos = zodis.find(zenklas, pos + zenklas.length());
-            }
-        }
-
-        // zodis.erase(std::remove_if(zodis.begin(), zodis.end(), [](unsigned char c)
-        //                            { return std::ispunct(c) && c != '-'; }), // '-' netrinam, nes plg. Tumas-Vaižgantas, Lavoriškių-Nemenčinės
-        //             zodis.end());
-
-        // // likusių, utf-8 skyrybos ženklų valymas
-        // const std::string zenklai[] = {"„", "“", "–", "”", "…"};
-        // for (const std::string &zenklas : zenklai)
-        // {
-        //     size_t poz = zodis.find(zenklas);
-        //     if (poz != std::string::npos) // jeigu rasta
-        //     {
-        //         zodis.erase(poz, zenklas.length());
-        //     }
-        // }
-
-        return zodis;
-    }
-
-    friend bool ar_url(std::string s)
-    {
-        if (s.substr(0, 7) == "http://" || s.substr(0, 8) == "https://")
-        {
-            return true;
-        }
-        Domenu_priesagos d;
-        if (d.domenu_priesagos.empty())
-        {
-            throw std::runtime_error("Nerastos URL domenų priesagos.");
-        }
-
-        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c)
-                       { return std::toupper(c); });
-        for (const auto &priesaga : d.domenu_priesagos)
-        {
-            if (s.ends_with("." + priesaga))
-            {
-                return true;
-            }
-            if (s.find("." + priesaga + "/") != std::string::npos) // ne tik ends_with .xxx/, nes pvz. prusaspira.org/wirdeins
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     void suskaityt_zodziai()
     {
@@ -164,11 +81,6 @@ public:
         }
         isvesties_failas.close();
     }
-
-    // friend std::ostream &operator<<(std::ostream &os, const std::unordered_map<std::string, unsigned int> &zodziai)
-    // {
-    //     //
-    // }
 };
 
 int main()
