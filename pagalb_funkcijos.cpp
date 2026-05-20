@@ -1,4 +1,20 @@
-#include "zodzio_funkcijos.h"
+#include "pagalb_funkcijos.h"
+
+std::ostream &operator<<(std::ostream &os, const std::set<unsigned int> &aibe)
+{
+    if (aibe.size() == 0)
+        return os;
+    unsigned int idx = 0;
+    for (const auto &x : aibe)
+    {
+        if (idx != aibe.size() - 1)
+            os << x << ", ";
+        else
+            os << x;
+        idx++;
+    }
+    return os;
+}
 
 std::string pakeist_skyryba_tarpais(std::string &zodis)
 {
