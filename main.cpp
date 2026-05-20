@@ -11,17 +11,21 @@
 
 #include "zodzio_funkcijos.h"
 
-// class Zodis
-// {
-//     std::string zodis;
-//     unsigned int pasikartojimai;
-//     std::unordered_set<unsigned int> atveju_eilutes;
-
-// public:
-//     Zodis(std::string zodis) : zodis(zodis), pasikartojimai(1) {}
-//     // metuods, kad pakelt pasėkartuojėmus
-
-// };
+std::ostream &operator<<(std::ostream &os, const std::set<unsigned int> &aibe)
+{
+    if (aibe.size() == 0)
+        return os;
+    unsigned int idx = 0;
+    for (const auto &x : aibe)
+    {
+        if (idx != aibe.size() - 1)
+            os << x << ", ";
+        else
+            os << x;
+        idx++;
+    }
+    return os;
+}
 
 class Tekstas
 {
@@ -40,7 +44,7 @@ public:
             throw std::runtime_error("Nepavyko atidaryti failo: " + ivesties_failo_pav);
         }
 
-        unsigned int eil_num = 0;
+        unsigned int eil_num = 1;
         while (std::getline(failas, eil))
         {
             std::istringstream sr(eil);
@@ -109,10 +113,24 @@ public:
         for (const auto &pora : zodziai)
         {
             if (pora.second.pasikartojimai > 1)
-                isvesties_failas << std::format("{:<30}{:<10}\n", pora.first, pora.second); // < — kairėn; 30/10 — setw
+                isvesties_failas << std::format("{:<30}{:<20}\n", pora.first, pora.second.pasikartojimai); // < — kairėn; 30/10 — setw
             // isvesties_failas << std::left << std::setw(30) << pora.first << std::left << std::setw(10) << pora.second << '\n';
         }
         isvesties_failas.close();
+    }
+
+    void spausd_zodziu_atveju_lentele(std::string isvesties_failo_pav = "lentele.txt")
+    {
+        std::ofstream isvesties_failas(isvesties_failo_pav);
+        isvesties_failas << std::format("{:<30}{:<20}Atvejų eilutės\n", "Žodis", "Atvejų sk.");
+        for (const auto &pora : zodziai)
+        {
+            if (pora.second.pasikartojimai > 1)
+            {
+                isvesties_failas << std::format("{:<30}{:<20}", pora.first, pora.second.pasikartojimai);
+                isvesties_failas << pora.second.atveju_eilutes << '\n';
+            }
+        }
     }
 };
 
@@ -121,5 +139,6 @@ int main()
     Tekstas tekstas("tekstas.txt");
     tekstas.suskaityt_zodziai();
     tekstas.spausd_zodziu_statistika();
+    tekstas.spausd_zodziu_atveju_lentele();
     return 0;
 }

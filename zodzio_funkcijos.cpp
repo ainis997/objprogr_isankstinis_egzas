@@ -1,6 +1,6 @@
 #include "zodzio_funkcijos.h"
 
-std::string pakeist_skyryba_tarpais(std::string zodis)
+std::string pakeist_skyryba_tarpais(std::string &zodis)
 {
     for (char &c : zodis)
     {
@@ -24,7 +24,7 @@ std::string pakeist_skyryba_tarpais(std::string zodis)
     return zodis;
 }
 
-bool ar_url(std::string s)
+bool ar_url(std::string s) // ne nuoroda, o kopija, kad iš tikro nepacapsint žodžių
 {
     if (s.substr(0, 7) == "http://" || s.substr(0, 8) == "https://")
     {

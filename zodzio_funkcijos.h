@@ -4,13 +4,14 @@
 #include <algorithm>
 #include <exception>
 #include <unordered_set>
+#include <set>
 #include <fstream>
 
 class Zodzio_duomenys
 {
 public:
     unsigned int pasikartojimai;
-    std::unordered_set<unsigned int> atveju_eilutes;
+    std::set<unsigned int> atveju_eilutes;
     Zodzio_duomenys() : pasikartojimai(1) {}
 };
 
@@ -32,5 +33,5 @@ public:
 
 // funkcijos
 
-std::string pakeist_skyryba_tarpais(std::string zodis);
+std::string pakeist_skyryba_tarpais(std::string &zodis);
 bool ar_url(std::string s);
