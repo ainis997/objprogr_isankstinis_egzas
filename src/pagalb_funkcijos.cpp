@@ -49,7 +49,7 @@ bool ar_url(std::string s) // ne nuoroda, o kopija, kad iš tikro nepacapsint ž
     Domenu_priesagos d;
     if (d.domenu_priesagos.empty())
     {
-        throw std::runtime_error("Nerastos URL domenų priesagos.");
+        throw std::runtime_error("Nerastos URL domenu priesagos.");
     }
 
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c)

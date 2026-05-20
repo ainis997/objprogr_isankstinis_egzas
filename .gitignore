@@ -1,2 +1,4 @@
 *.txt
+!domenu_priesagos.txt
+
 *.exe

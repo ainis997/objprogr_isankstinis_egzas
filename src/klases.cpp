@@ -30,8 +30,18 @@ void Tekstas::suskaityt_zodziai()
             {
                 zodis = zodis.substr(1);
             }
+            bool ar_tai_url = false; // jeigu nepavyktų nuskanuot URLų, tai suponuojam, kad tai ne URL..
+            try
+            {
+                ar_tai_url = ar_url(zodis);
+            }
+            catch (const std::exception &e)
+            {
+                // std::cerr << e.what() << '\n';
+                std::cerr << "(Nepavyko atskirti URL nuorodų tekste: " << e.what() << ")\n";
+            }
 
-            if (!ar_url(zodis))
+            if (!ar_tai_url)
             {
                 std::string zodis_be_skyrybos = pakeist_skyryba_tarpais(zodis);
                 std::istringstream ss(zodis_be_skyrybos);
@@ -81,6 +91,7 @@ void Tekstas::suskaityt_zodziai()
 
 void Tekstas::spausd_zodziu_statistika(std::string isvesties_failo_pav)
 {
+    isvesties_failo_pav = "isvestis/" + isvesties_failo_pav;
     std::ofstream isvesties_failas(isvesties_failo_pav);
     for (const auto &pora : zodziai)
     {
@@ -93,6 +104,7 @@ void Tekstas::spausd_zodziu_statistika(std::string isvesties_failo_pav)
 
 void Tekstas::spausd_zodziu_atveju_lentele(std::string isvesties_failo_pav)
 {
+    isvesties_failo_pav = "isvestis/" + isvesties_failo_pav;
     std::ofstream isvesties_failas(isvesties_failo_pav);
     isvesties_failas << std::format("{:<30}{:<20}Atvejų eilutės\n", "Žodis", "Atvejų sk.");
     for (const auto &pora : zodziai)
@@ -107,6 +119,7 @@ void Tekstas::spausd_zodziu_atveju_lentele(std::string isvesties_failo_pav)
 
 void Tekstas::spausd_urlus(std::string isvesties_failo_pav)
 {
+    isvesties_failo_pav = "isvestis/" + isvesties_failo_pav;
     std::ofstream isvesties_failas(isvesties_failo_pav);
     for (const auto &url : urlai)
     {

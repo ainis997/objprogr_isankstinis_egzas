@@ -7,6 +7,7 @@
 #include <sstream>
 #include <format>
 #include <exception>
+#include <iostream>
 
 #include "pagalb_funkcijos.h"
 
@@ -25,7 +26,7 @@ public:
     std::unordered_set<std::string> domenu_priesagos;
     Domenu_priesagos()
     {
-        std::ifstream domenu_priesagu_failas(domenu_priesagu_failo_pav);
+        std::ifstream domenu_priesagu_failas("src/" + domenu_priesagu_failo_pav);
         std::string eil;
         while (std::getline(domenu_priesagu_failas, eil))
         {
@@ -41,11 +42,11 @@ class Tekstas
     std::unordered_set<std::string> urlai;
 
 public:
-    Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
+    Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav("tekstai/" + ivesties_failo_pav) {}
 
     void suskaityt_zodziai();
 
-    void spausd_zodziu_statistika(std::string isvesties_failo_pav = "isvestis.txt");
+    void spausd_zodziu_statistika(std::string isvesties_failo_pav = "zodziai_su_ju_pasikartojimu_sk.txt");
 
     void spausd_zodziu_atveju_lentele(std::string isvesties_failo_pav = "lentele.txt");
 
