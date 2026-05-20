@@ -16,6 +16,11 @@ void Tekstas::suskaityt_zodziai()
         std::string zodis;
         while (sr >> zodis)
         {
+            ///////////////////////////////////////////////////////////////////////////////////////
+            // std::transform(zodis.begin(), zodis.end(), zodis.begin(), [](unsigned char c)
+            //                { return std::tolower(c); });
+            ///////////////////////////////////////////////////////////////////////////////////////
+
             // minimalūs pataisymai (pvz. gale tašką išimt), kad netrukdytų atpažint url'ų
             if (std::ispunct(zodis.at(zodis.length() - 1)))
             {
@@ -33,7 +38,6 @@ void Tekstas::suskaityt_zodziai()
                 std::string zodis2;
                 while (ss >> zodis2) // atsikratom sukurtų tarpų (jeigu jų buvo; jeigu ne, nieks nepakis)
                 {
-                    ///////////////////////////////////////////
                     if (zodziai.contains(zodis2))
                     {
                         zodziai[zodis2].pasikartojimai++;
@@ -41,6 +45,9 @@ void Tekstas::suskaityt_zodziai()
                     }
                     else
                     {
+                        if (std::all_of(zodis2.begin(), zodis2.end(), [](unsigned char c)
+                                        { return std::isdigit(c); })) // jeigu žodį sudaro tik skaitmenys, jo nepridėt
+                            continue;
                         Zodzio_duomenys zd;
                         zodziai.insert({zodis2, zd});
                     }
