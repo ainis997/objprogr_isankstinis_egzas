@@ -31,6 +31,7 @@ class Tekstas
 {
     std::string ivesties_failo_pav;
     std::unordered_map<std::string, Zodzio_duomenys> zodziai; // map, ne set, nes seto elementus redaguot nepatogu
+    std::unordered_set<std::string> urlai;
 
 public:
     Tekstas(std::string ivesties_failo_pav) : ivesties_failo_pav(ivesties_failo_pav) {}
@@ -89,7 +90,7 @@ public:
                         zodis = zodis.substr(1);
                     }
 
-                    ////////////////////////////////
+                    urlai.insert(zodis); // kaupiam atskirai URLus; jeigu toks URLas jau yra, unordered_set tsg nepakis
                     if (zodziai.contains(zodis))
                     {
                         zodziai[zodis].pasikartojimai++;
@@ -132,6 +133,15 @@ public:
             }
         }
     }
+
+    void spausd_urlus(std::string isvesties_failo_pav = "urlai.txt")
+    {
+        std::ofstream isvesties_failas(isvesties_failo_pav);
+        for (const auto &url : urlai)
+        {
+            isvesties_failas << url << '\n';
+        }
+    }
 };
 
 int main()
@@ -140,5 +150,6 @@ int main()
     tekstas.suskaityt_zodziai();
     tekstas.spausd_zodziu_statistika();
     tekstas.spausd_zodziu_atveju_lentele();
+    tekstas.spausd_urlus();
     return 0;
 }
