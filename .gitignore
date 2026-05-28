@@ -1,4 +1,5 @@
 *.txt
 !domenu_priesagos.txt
+!pvz.txt
 
 *.exe
